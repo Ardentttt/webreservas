@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CanCha5 – Reservá tu Cancha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#00e87a;--dark:#0a0f0d;--dark2:#111a14;--card:#141f17;
+      --border:#1e2e22;--text:#c8d9cc;--muted:#5a7060;--white:#f0f5f1;
+      --accent:#ffe14d;--danger:#ff4d4d;--pending:#ff9f1c;
+    }
+    body{font-family:'Barlow',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
+    header{position:sticky;top:0;z-index:100;background:rgba(10,15,13,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:64px}
+    .logo{font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:900;color:var(--white);letter-spacing:-.5px}
+    .logo span{color:var(--green)}
+    nav a{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;margin-left:1.75rem;transition:color .2s}
+    nav a:hover{color:var(--green)}
+    .hero{position:relative;min-height:380px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:5rem 5vw 3rem;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 72% 50%,rgba(0,232,122,.07) 0%,transparent 70%),url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e2e22' stroke-width='1'%3E%3Crect x='0' y='0' width='60' height='60'/%3E%3Cline x1='30' y1='0' x2='30' y2='60'/%3E%3Cline x1='0' y1='30' x2='60' y2='30'/%3E%3Ccircle cx='30' cy='30' r='12'/%3E%3C/g%3E%3C/svg%3E")}
+    .hero-label{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:.75rem;position:relative}
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:.95;color:var(--white);position:relative}
+    .hero h1 em{color:var(--green);font-style:normal}
+    .hero p{margin-top:1.1rem;max-width:440px;font-size:.98rem;font-weight:300;color:var(--text);line-height:1.65;position:relative}
+    .hero-badges{display:flex;gap:.65rem;margin-top:1.4rem;flex-wrap:wrap;position:relative}
+    .badge{display:inline-flex;align-items:center;gap:.35rem;border-radius:100px;padding:.4rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700}
+    .bg{background:rgba(0,232,122,.12);border:1px solid rgba(0,232,122,.3);color:var(--green)}
+    .bm{background:rgba(0,158,227,.12);border:1px solid rgba(0,158,227,.3);color:#4dc8ff}
+    .bw{background:rgba(255,225,77,.1);border:1px solid rgba(255,225,77,.3);color:var(--accent)}
+    .sched-bar{margin:0 5vw 2.5rem;background:rgba(255,225,77,.05);border:1px solid rgba(255,225,77,.18);border-radius:14px;padding:.9rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .sched-bar p{font-size:.88rem;color:var(--accent);font-weight:500}
+    .sched-bar strong{color:var(--white)}
+    .days{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.45rem}
+    .dc{padding:.18rem .55rem;border-radius:5px;font-size:.72rem;font-weight:700;letter-spacing:.3px;background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.22);color:var(--green)}
+    .courts-section{padding:1rem 5vw 2.5rem}
+    .sec-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:800;color:var(--white);letter-spacing:-.4px;margin-bottom:1.75rem}
+    .sec-title em{color:var(--green);font-style:normal}
+    .courts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.5rem}
+    .court-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .25s,box-shadow .25s}
+    .court-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 0 1px rgba(0,232,122,.12)}
+    .court-img{height:190px;position:relative;overflow:hidden;background:var(--dark2)}
+    .court-img svg{width:100%;height:100%}
+    .ct-badge{position:absolute;top:10px;left:10px;padding:.28rem .75rem;border-radius:100px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700}
+    .ct-tech{background:rgba(0,158,227,.15);color:#4dc8ff;border:1px solid rgba(77,200,255,.28)}
+    .ct-dest{background:rgba(255,225,77,.12);color:var(--accent);border:1px solid rgba(255,225,77,.28)}
+    .court-body{padding:1.35rem}
+    .court-name{font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:800;color:var(--white)}
+    .court-tags{display:flex;gap:.35rem;margin:.5rem 0;flex-wrap:wrap}
+    .tag{padding:.18rem .55rem;border-radius:5px;background:var(--dark2);border:1px solid var(--border);font-size:.72rem;color:var(--muted)}
+    .court-price{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:700;color:var(--green);margin:.8rem 0 .2rem}
+    .court-price small{font-size:.82rem;color:var(--muted);font-weight:400}
+    .price-note{font-size:.78rem;color:var(--accent);margin-bottom:1rem}
+    .btn-book{display:block;width:100%;padding:.78rem;border-radius:10px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.4px;background:var(--green);color:var(--dark);transition:all .2s}
+    .btn-book:hover{background:#00ff88;box-shadow:0 0 18px rgba(0,232,122,.4)}
+    .mp-box{margin:0 5vw 3rem;background:rgba(0,158,227,.06);border:1px solid rgba(0,158,227,.18);border-radius:14px;padding:1.4rem 1.8rem;display:flex;align-items:flex-start;gap:1.1rem;flex-wrap:wrap}
+    .mp-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:800;color:#4dc8ff;margin-bottom:.3rem}
+    .mp-box p{font-size:.86rem;color:var(--text);line-height:1.6}
+    .mp-box strong{color:var(--white)}
+    .mp-alias-static{display:inline-block;margin-top:.5rem;background:var(--dark);border:1px dashed rgba(0,158,227,.38);border-radius:7px;padding:.35rem .9rem;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:#4dc8ff;letter-spacing:1px}
+    .how-sec{padding:3rem 5vw 4rem;background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1.75rem;margin-top:1.75rem}
+    .step{text-align:center}
+    .sn{font-family:'Barlow Condensed',sans-serif;font-size:3.2rem;font-weight:900;color:rgba(0,232,122,.09);line-height:1}
+    .si{font-size:1.9rem;margin:-.4rem 0 .45rem}
+    .step h3{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:.35rem}
+    .step p{font-size:.85rem;color:var(--muted);line-height:1.5}
+    .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.86);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem}
+    .overlay.open{display:flex}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:22px;width:100%;max-width:540px;padding:2rem;position:relative;animation:up .28s ease;max-height:92vh;overflow-y:auto}
+    @keyframes up{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .mcl{position:absolute;top:1rem;right:1rem;background:var(--dark2);border:1px solid var(--border);color:var(--muted);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:color .2s}
+    .mcl:hover{color:var(--white)}
+    .modal h2{font-family:'Barlow Condensed',sans-serif;font-size:1.65rem;font-weight:800;color:var(--white);margin-bottom:.15rem}
+    .msub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+    .fr{margin-bottom:.95rem}
+    .fr label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.38rem}
+    .fr input{width:100%;padding:.68rem .95rem;background:var(--dark2);border:1px solid var(--border);border-radius:9px;color:var(--white);font-family:'Barlow',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s}
+    .fr input:focus{border-color:var(--green)}
+    .fr input.err{border-color:var(--danger)}
+    .dp-label{font-size:.73rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+    .day-picker{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.95rem}
+    .dp-btn{min-width:52px;padding:.55rem .3rem;border-radius:9px;border:1px solid var(--border);background:var(--dark2);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;line-height:1.3}
+    .dp-btn:hover{border-color:var(--green);color:var(--green);background:rgba(0,232,122,.07)}
+    .dp-btn.dp-sel{border-color:var(--green);color:var(--dark);background:var(--green)}
+    .slot-label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.4rem}
+    .slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-bottom:.95rem}
+    .slot-btn{padding:.65rem .4rem;border-radius:9px;border:1px solid var(--border);background:var(--dark2);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;white-space:pre-line;line-height:1.3}
+    .slot-btn:hover:not([disabled]){border-color:var(--green);color:var(--green);background:rgba(0,232,122,.07)}
+    .slot-btn.slot-sel{border-color:var(--green);color:var(--dark);background:var(--green)}
+    .slot-btn.slot-taken{background:rgba(255,77,77,.08);border-color:rgba(255,77,77,.2);color:var(--danger);cursor:not-allowed;font-size:.76rem}
+    .slot-btn.slot-pending{background:rgba(255,159,28,.08);border-color:rgba(255,159,28,.22);color:var(--pending);cursor:not-allowed;font-size:.76rem}
+    .ps{background:var(--dark2);border:1px solid var(--border);border-radius:11px;padding:.95rem;margin:.95rem 0}
+    .pr{display:flex;justify-content:space-between;font-size:.88rem;color:var(--muted);margin-bottom:.38rem}
+    .pr.hl{color:var(--accent);font-weight:600;font-size:.95rem}
+    .mpb{background:rgba(0,158,227,.07);border:1px solid rgba(0,158,227,.22);border-radius:13px;padding:1rem 1.15rem;margin:.95rem 0}
+    .mpb-title{font-family:'Barlow Condensed',sans-serif;font-size:.98rem;font-weight:800;color:#4dc8ff;margin-bottom:.45rem}
+    .mpb p{font-size:.82rem;color:var(--text);line-height:1.6;margin-bottom:.4rem}
+    .alias-row{display:flex;align-items:center;justify-content:space-between;background:var(--dark);border:1px dashed rgba(0,158,227,.35);border-radius:7px;padding:.45rem .9rem;margin-top:.4rem}
+    .av{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:#4dc8ff;letter-spacing:1px}
+    .cpb{background:rgba(0,158,227,.14);border:1px solid rgba(0,158,227,.28);color:#4dc8ff;border-radius:5px;padding:.22rem .55rem;font-size:.72rem;cursor:pointer;transition:all .2s}
+    .cpb:hover{background:rgba(0,158,227,.24)}
+    .mp-steps{margin-top:.6rem;list-style:none}
+    .mp-steps li{font-size:.8rem;color:var(--muted);padding:.15rem 0}
+    .mp-steps li::before{content:'→ ';color:#4dc8ff}
+    .pending-note{background:rgba(255,159,28,.08);border:1px solid rgba(255,159,28,.22);border-radius:10px;padding:.75rem 1rem;font-size:.82rem;color:var(--pending);margin-bottom:.95rem;line-height:1.5}
+    .pending-note strong{color:var(--white)}
+    .btn-confirm{width:100%;padding:.88rem;background:var(--green);color:var(--dark);border:none;border-radius:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:.4px;transition:all .2s;margin-top:.25rem}
+    .btn-confirm:hover{background:#00ff88;box-shadow:0 0 22px rgba(0,232,122,.38)}
+    .btn-confirm:disabled{background:var(--muted);cursor:not-allowed;box-shadow:none}
+    .loading-ov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+    .loading-ov.open{display:flex}
+    .spinner{width:44px;height:44px;border:3px solid rgba(0,232,122,.2);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-ov p{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--green);font-weight:700}
+    .suc-ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:2rem;overflow-y:auto}
+    .suc-ov.open{display:flex}
+    .suc-icon{font-size:3.8rem;margin-bottom:.9rem;animation:pop .4s ease}
+    @keyframes pop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+    .suc-ov h2{font-family:'Barlow Condensed',sans-serif;font-size:2.1rem;font-weight:900;color:var(--pending);margin-bottom:.4rem}
+    .suc-ov>p{color:var(--text);max-width:340px;line-height:1.65;font-size:.9rem}
+    .suc-detail{margin:1.4rem 0;background:var(--card);border:1px solid var(--border);border-radius:13px;padding:1.2rem;max-width:360px;width:100%;text-align:left}
+    .sdr{display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.45rem}
+    .sdr span:first-child{color:var(--muted)}
+    .sdr span:last-child{color:var(--white);font-weight:500}
+    .sd-div{border:none;border-top:1px solid var(--border);margin:.65rem 0}
+    .btn-wa{display:inline-flex;align-items:center;gap:.5rem;margin-top:.9rem;padding:.85rem 2rem;background:#25d366;border:none;border-radius:100px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-wa:hover{background:#1ebe5d;box-shadow:0 0 20px rgba(37,211,102,.45)}
+    .btn-back{margin-top:.6rem;padding:.65rem 2rem;background:transparent;border:1px solid var(--pending);border-radius:100px;color:var(--pending);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .btn-back:hover{background:rgba(255,159,28,.1)}
+    footer{padding:1.8rem 5vw;border-top:1px solid var(--border);text-align:center;font-size:.8rem;color:var(--muted)}
+    footer strong{color:var(--green)}
+    @media(max-width:480px){.hero h1{font-size:2.8rem}nav a{margin-left:.9rem;font-size:.8rem}}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Can<span>Cha</span>5</div>
+  <nav><a href="#">Canchas</a><a href="#how">Cómo funciona</a><a href="#">Contacto</a></nav>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-label">⚽ Fútbol 5 – Reservas Online</div>
+  <h1>Reservá tu<br><em>cancha</em> hoy</h1>
+  <p>Elegí el turno, transferís el 50% de seña por Mercado Pago, y el dueño confirma tu reserva.</p>
+  <div class="hero-badges">
+    <div class="badge bg">⚡ 50% de seña</div>
+    <div class="badge bm">💳 Solo Mercado Pago</div>
+    <div class="badge bw">📅 Todos los días · 17–23 hs</div>
+  </div>
+</section>
+
+<div class="sched-bar">
+  <div style="font-size:1.4rem">🕔</div>
+  <div>
+    <p><strong>Horarios: 17:00 a 23:00 hs</strong> — todos los días de la semana</p>
+    <div class="days">
+      <span class="dc">Lun</span><span class="dc">Mar</span><span class="dc">Mié</span>
+      <span class="dc">Jue</span><span class="dc">Vie</span>
+      <span class="dc">Sáb</span><span class="dc">Dom</span>
+    </div>
+  </div>
+</div>
+
+<section class="courts-section">
+  <div class="sec-title">Nuestras <em>2 canchas</em></div>
+  <div class="courts-grid" id="courts-grid"></div>
+</section>
+
+<div class="mp-box">
+  <div style="font-size:2.2rem;flex-shrink:0">💳</div>
+  <div>
+    <h3>Pago por Mercado Pago – Solo Transferencia</h3>
+    <p>Transferís el <strong>50% del valor del turno</strong> al alias indicado. Tu reserva queda <strong style="color:var(--pending)">PENDIENTE</strong> hasta que el dueño verifique el pago y la confirme. El <strong>50% restante</strong> lo abonás al llegar.</p>
+    <div class="mp-alias-static">cancha5.reservas</div>
+  </div>
+</div>
+
+<section class="how-sec" id="how">
+  <div class="sec-title">¿Cómo <em>funciona</em>?</div>
+  <div class="steps">
+    <div class="step"><div class="sn">01</div><div class="si">📅</div><h3>Elegí día y turno</h3><p>Todos los días de 17 a 23 hs. Los turnos ocupados o pendientes se muestran bloqueados.</p></div>
+    <div class="step"><div class="sn">02</div><div class="si">💸</div><h3>Transferís el 50%</h3><p>Al alias de Mercado Pago, con tu nombre real para que el dueño lo identifique.</p></div>
+    <div class="step"><div class="sn">03</div><div class="si">⏳</div><h3>Queda pendiente</h3><p>El dueño ve la reserva en Google Sheets, verifica el pago en MP y la confirma.</p></div>
+    <div class="step"><div class="sn">04</div><div class="si">⚽</div><h3>¡A jugar!</h3><p>Al llegar abonás el 50% restante y la cancha es tuya.</p></div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="mcl" onclick="closeModal()">✕</button>
+    <h2 id="m-name">Cancha</h2>
+    <div class="msub" id="m-sub"></div>
+    <div class="fr">
+      <label>Nombre completo <span style="color:var(--accent);font-size:.7rem;text-transform:none;font-weight:400">(igual que en Mercado Pago)</span></label>
+      <input type="text" id="i-name" placeholder="Ej: Lucas Pérez"/>
+    </div>
+    <div class="fr">
+      <label>Teléfono / WhatsApp</label>
+      <input type="tel" id="i-phone" placeholder="Ej: 11 1234-5678"/>
+    </div>
+    <div class="dp-label">Elegí el día</div>
+    <div class="day-picker" id="day-picker"></div>
+    <div class="slot-label">Turno horario</div>
+    <div class="slot-grid" id="slot-grid"></div>
+    <div class="ps">
+      <div class="pr"><span>Valor completo del turno</span><span id="ps-full">$0</span></div>
+      <div class="pr hl"><span>⚡ Seña ahora (50%)</span><span id="ps-half">$0</span></div>
+      <div class="pr"><span>Saldo el día del partido</span><span id="ps-rest">$0</span></div>
+    </div>
+    <div class="mpb">
+      <div class="mpb-title">💳 Transferir seña — Mercado Pago</div>
+      <p>Antes de confirmar, transferí la seña a este alias:</p>
+      <div class="alias-row">
+        <span class="av">cancha5.reservas</span>
+        <button class="cpb" onclick="copyAlias()">📋 Copiar</button>
+      </div>
+      <ul class="mp-steps">
+        <li>Abrí Mercado Pago → "Transferir"</li>
+        <li>Alias: <strong style="color:#4dc8ff">cancha5.reservas</strong></li>
+        <li>Ingresá el monto exacto de la seña</li>
+        <li>Usá el <strong style="color:var(--white)">mismo nombre</strong> que pusiste arriba</li>
+      </ul>
+    </div>
+    <div class="pending-note">
+      ⏳ <strong>Tu reserva quedará PENDIENTE.</strong> El dueño verifica el pago buscando tu nombre en Mercado Pago y luego la confirma. Te avisamos por WhatsApp.
+    </div>
+    <button class="btn-confirm" id="btn-confirm" onclick="submitReservation()">Solicitar reserva →</button>
+  </div>
+</div>
+
+<div class="loading-ov" id="loading">
+  <div class="spinner"></div>
+  <p>Enviando reserva…</p>
+</div>
+
+<!-- PANTALLA DE ÉXITO -->
+<div class="suc-ov" id="suc-ov">
+  <div class="suc-icon">⏳</div>
+  <h2>¡Solicitud enviada!</h2>
+  <p>Tu reserva está <strong style="color:var(--pending)">PENDIENTE</strong> de confirmación. Tocá el botón para avisarle al dueño por WhatsApp.</p>
+  <div class="suc-detail" id="suc-detail"></div>
+  <a id="wa-btn" class="btn-wa" href="#" target="_blank" rel="noopener">💬 Avisar al dueño por WhatsApp</a>
+  <button class="btn-back" onclick="closeSuc()">← Volver a canchas</button>
+</div>
+
+<footer>
+  <p><strong>CanCha5</strong> — Fútbol 5 · Todos los días · 17 a 23 hs · Seña 50% vía Mercado Pago</p>
+</footer>
+
+<script>
+var CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwU1kykJN76019ML6ByqqPjVS6UDcDnXrGAi6iBC4rEH8CmDr-IqaOs77wzAdNZuOjJ/exec",
+  ALIAS_MP: "cancha5.reservas",
+  WHATSAPP: "5491166140749",
+  canchas: [
+    { id: 1, name: "Cancha 1 — Techada",    tipo: "techada",    tags: ["Techada","Cesped Sintetico","Luz LED","10 jugadores"],    price: 8000 },
+    { id: 2, name: "Cancha 2 — Destechada", tipo: "destechada", tags: ["Destechada","Cesped Sintetico","Iluminada","10 jugadores"], price: 6500 }
+  ],
+  SLOTS: ["17:00","18:00","19:00","20:00","21:00","22:00","23:00"]
+};
+
+var selCourt = null;
+var selDate  = null;
+var selSlot  = null;
+var occupied = {};
+
+function pitchSVG(tipo) {
+  var t=tipo==="techada", f=t?"#070e18":"#051a0e", l=t?"#0a2840":"#0a3d1e", ac=t?"#4dc8ff":"#00e87a";
+  var deco = t
+    ? '<rect x="0" y="0" width="300" height="7" fill="'+ac+'" opacity=".5"/><rect x="0" y="173" width="300" height="7" fill="'+ac+'" opacity=".5"/><text x="150" y="162" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="10" fill="'+ac+'" opacity=".35" letter-spacing="2">TECHADA</text>'
+    : '<circle cx="54" cy="25" r="11" fill="none" stroke="'+ac+'" stroke-width="1.5" opacity=".22"/><circle cx="54" cy="25" r="4.5" fill="'+ac+'" opacity=".18"/><circle cx="246" cy="25" r="11" fill="none" stroke="'+ac+'" stroke-width="1.5" opacity=".22"/><circle cx="246" cy="25" r="4.5" fill="'+ac+'" opacity=".18"/><text x="150" y="162" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="10" fill="'+ac+'" opacity=".35" letter-spacing="2">DESTECHADA</text>';
+  return '<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="display:block"><rect width="300" height="180" fill="'+f+'"/>'+deco+'<rect x="10" y="10" width="280" height="160" fill="none" stroke="'+l+'" stroke-width="2"/><line x1="150" y1="10" x2="150" y2="170" stroke="'+l+'" stroke-width="1.5"/><circle cx="150" cy="90" r="27" fill="none" stroke="'+l+'" stroke-width="1.5"/><circle cx="150" cy="90" r="3" fill="'+l+'"/><rect x="10" y="63" width="30" height="54" fill="none" stroke="'+l+'" stroke-width="1.5"/><rect x="260" y="63" width="30" height="54" fill="none" stroke="'+l+'" stroke-width="1.5"/></svg>';
+}
+
+function renderCourts() {
+  var g = document.getElementById("courts-grid");
+  g.innerHTML = "";
+  CONFIG.canchas.forEach(function(c) {
+    var half = Math.round(c.price / 2);
+    var typeCls   = c.tipo === "techada" ? "ct-tech" : "ct-dest";
+    var typeLabel = c.tipo === "techada" ? "Techada" : "Destechada";
+    var tagsHtml  = c.tags.map(function(t) { return '<span class="tag">'+t+'</span>'; }).join("");
+    var div = document.createElement("div");
+    div.className = "court-card";
+    div.innerHTML =
+      '<div class="court-img">'+pitchSVG(c.tipo)+'<div class="ct-badge '+typeCls+'">'+typeLabel+'</div></div>'+
+      '<div class="court-body">'+
+        '<div class="court-name">'+c.name+'</div>'+
+        '<div class="court-tags">'+tagsHtml+'</div>'+
+        '<div class="court-price">$'+c.price.toLocaleString("es-AR")+' <small>/ hora</small></div>'+
+        '<div class="price-note">Seña: $'+half.toLocaleString("es-AR")+' (50%) · Solo MP Transferencia</div>'+
+        '<button class="btn-book" onclick="openModal('+c.id+')">Ver turnos disponibles</button>'+
+      '</div>';
+    g.appendChild(div);
+  });
+}
+
+function isoDate(d) { return d.toISOString().split("T")[0]; }
+function localDate(s) {
+  var p = s.split("-");
+  return new Date(Number(p[0]), Number(p[1])-1, Number(p[2]));
+}
+
+// Genera los próximos 14 días (TODOS, incluyendo sábado y domingo)
+function getNextDays() {
+  var days = [], today = new Date();
+  today.setHours(0,0,0,0);
+  for (var i = 0; i < 14; i++) {
+    var d = new Date(today);
+    d.setDate(today.getDate() + i);
+    days.push(isoDate(d));
+  }
+  return days;
+}
+
+function openModal(id) {
+  selCourt = null;
+  CONFIG.canchas.forEach(function(c) { if (c.id === id) selCourt = c; });
+  selDate = null; selSlot = null;
+  document.getElementById("m-name").textContent = selCourt.name;
+  document.getElementById("m-sub").textContent  = selCourt.tags.join(" · ");
+  document.getElementById("btn-confirm").disabled = true;
+  updatePrices();
+  renderDayPicker();
+  renderSlots();
+  document.getElementById("overlay").classList.add("open");
+  loadOccupied(id);
+}
+
+function closeModal() {
+  document.getElementById("overlay").classList.remove("open");
+  document.getElementById("i-name").value = "";
+  document.getElementById("i-phone").value = "";
+  selDate = null; selSlot = null;
+}
+
+function loadOccupied(courtId) {
+  var url = CONFIG.APPS_SCRIPT_URL + "?action=getOccupied&courtId=" + courtId;
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!occupied[courtId]) occupied[courtId] = {};
+      Object.keys(data).forEach(function(key) {
+        var p = key.split("|"), date = p[0], slot = p[1];
+        if (!occupied[courtId][date]) occupied[courtId][date] = {};
+        occupied[courtId][date][slot] = data[key];
+      });
+      renderDayPicker();
+      renderSlots();
+    })
+    .catch(function() { console.warn("Sin conexion al servidor"); });
+}
+
+function renderDayPicker() {
+  var dp    = document.getElementById("day-picker");
+  var days  = getNextDays();
+  var names = ["Dom","Lun","Mar","Mie","Jue","Vie","Sab"];
+  dp.innerHTML = "";
+  days.forEach(function(d) {
+    var dt  = localDate(d);
+    var btn = document.createElement("button");
+    btn.className = "dp-btn" + (d === selDate ? " dp-sel" : "");
+    btn.innerHTML =
+      '<div style="font-size:.68rem">'+names[dt.getDay()]+'</div>'+
+      '<div style="font-size:1.15rem;font-weight:900">'+dt.getDate()+'</div>'+
+      '<div style="font-size:.62rem;opacity:.65">'+dt.toLocaleString("es-AR",{month:"short"})+'</div>';
+    btn.onclick = (function(date) {
+      return function() { selDate = date; selSlot = null; renderDayPicker(); renderSlots(); };
+    })(d);
+    dp.appendChild(btn);
+  });
+}
+
+function renderSlots() {
+  var sg  = document.getElementById("slot-grid");
+  var btn = document.getElementById("btn-confirm");
+  sg.innerHTML = "";
+  if (!selDate) {
+    sg.innerHTML = '<div style="color:var(--muted);font-size:.83rem;grid-column:1/-1;padding:.4rem 0">← Primero elegi un dia</div>';
+    btn.disabled = true;
+    return;
+  }
+  var occ = ((occupied[selCourt && selCourt.id] || {})[selDate]) || {};
+  var hasAvail = false;
+  CONFIG.SLOTS.forEach(function(slot) {
+    var status = occ[slot];
+    var s = document.createElement("button");
+    if (status === "confirmed") {
+      s.className = "slot-btn slot-taken"; s.textContent = slot+"\nReservado"; s.disabled = true;
+    } else if (status === "pending") {
+      s.className = "slot-btn slot-pending"; s.textContent = slot+"\nPendiente"; s.disabled = true;
+    } else {
+      hasAvail = true;
+      s.className = "slot-btn" + (slot === selSlot ? " slot-sel" : "");
+      s.textContent = slot+" hs";
+      s.onclick = (function(sl) {
+        return function() { selSlot = sl; renderSlots(); btn.disabled = false; };
+      })(slot);
+    }
+    sg.appendChild(s);
+  });
+  if (!hasAvail) {
+    btn.disabled = true;
+    var n = document.createElement("div");
+    n.style.cssText = "color:var(--danger);font-size:.8rem;grid-column:1/-1;padding:.35rem 0";
+    n.textContent = "Sin turnos disponibles para este dia.";
+    sg.appendChild(n);
+  } else if (!selSlot) {
+    btn.disabled = true;
+  }
+}
+
+function updatePrices() {
+  if (!selCourt) return;
+  var f = selCourt.price, h = Math.round(f/2);
+  document.getElementById("ps-full").textContent = "$"+f.toLocaleString("es-AR");
+  document.getElementById("ps-half").textContent = "$"+h.toLocaleString("es-AR");
+  document.getElementById("ps-rest").textContent = "$"+h.toLocaleString("es-AR");
+}
+
+function submitReservation() {
+  var name  = document.getElementById("i-name").value.trim();
+  var phone = document.getElementById("i-phone").value.trim();
+  document.getElementById("i-name").classList.remove("err");
+  document.getElementById("i-phone").classList.remove("err");
+  var ok = true;
+  if (!name)  { document.getElementById("i-name").classList.add("err");  ok = false; }
+  if (!phone) { document.getElementById("i-phone").classList.add("err"); ok = false; }
+  if (!ok) return;
+  if (!selDate || !selSlot) { alert("Elegi un dia y un turno."); return; }
+  var occ = (occupied[selCourt.id] || {})[selDate] || {};
+  if (occ[selSlot]) { alert("Ese turno acaba de ser tomado. Elegi otro."); renderSlots(); return; }
+
+  showLoad(true);
+  document.getElementById("btn-confirm").disabled = true;
+  var half = Math.round(selCourt.price / 2);
+  var payload = {
+    action:"newReservation", courtId:selCourt.id, courtName:selCourt.name,
+    date:selDate, slot:selSlot, name:name, phone:phone,
+    halfPrice:half, fullPrice:selCourt.price
+  };
+
+  // Guardamos estos valores para usarlos en el éxito
+  var _name = name, _phone = phone, _date = selDate, _slot = selSlot, _courtName = selCourt.name, _half = half;
+
+  fetch(CONFIG.APPS_SCRIPT_URL, { method:"POST", body:JSON.stringify(payload) })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      markPending(); showLoad(false); closeModal();
+      showSuc(_name, _phone, _date, _slot, _courtName, _half);
+    })
+    .catch(function() {
+      markPending(); showLoad(false); closeModal();
+      showSuc(_name, _phone, _date, _slot, _courtName, _half);
+    });
+}
+
+function markPending() {
+  if (!occupied[selCourt.id]) occupied[selCourt.id] = {};
+  if (!occupied[selCourt.id][selDate]) occupied[selCourt.id][selDate] = {};
+  occupied[selCourt.id][selDate][selSlot] = "pending";
+}
+
+function showLoad(v) { document.getElementById("loading").classList.toggle("open", v); }
+
+function showSuc(name, phone, date, slot, courtName, half) {
+  var dias = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+  var dt = localDate(date);
+  var dd = String(dt.getDate()).padStart(2,"0");
+  var mm = String(dt.getMonth()+1).padStart(2,"0");
+  var fd = dias[dt.getDay()]+" "+dd+"/"+mm+"/"+dt.getFullYear();
+
+  document.getElementById("suc-detail").innerHTML =
+    '<div class="sdr"><span>Cancha</span><span>'+courtName+'</span></div>'+
+    '<div class="sdr"><span>Fecha</span><span>'+fd+'</span></div>'+
+    '<div class="sdr"><span>Turno</span><span>'+slot+' hs</span></div>'+
+    '<div class="sdr"><span>Nombre</span><span>'+name+'</span></div>'+
+    '<div class="sdr"><span>WhatsApp</span><span>'+phone+'</span></div>'+
+    '<hr class="sd-div"/>'+
+    '<div class="sdr"><span>Seña a transferir (50%)</span><span style="color:var(--accent)">$'+half.toLocaleString("es-AR")+'</span></div>'+
+    '<div class="sdr"><span>Alias MP</span><span style="color:#4dc8ff">'+CONFIG.ALIAS_MP+'</span></div>';
+
+  // Armar mensaje de WhatsApp con encodeURIComponent (funciona en todos los navegadores)
+  var msg = "Hola! Reservé una cancha en CanCha5:\n"
+    + "Cancha: " + courtName + "\n"
+    + "Fecha: " + fd + "\n"
+    + "Turno: " + slot + " hs\n"
+    + "A nombre de: " + name + "\n"
+    + "Tel: " + phone + "\n"
+    + "Seña (50%): $" + half.toLocaleString("es-AR") + "\n"
+    + "Ya realice la transferencia al alias MP.";
+
+  var waUrl = "https://wa.me/" + CONFIG.WHATSAPP + "?text=" + encodeURIComponent(msg);
+  document.getElementById("wa-btn").href = waUrl;
+
+  document.getElementById("suc-ov").classList.add("open");
+}
+
+function closeSuc() {
+  document.getElementById("suc-ov").classList.remove("open");
+  renderCourts();
+}
+
+function copyAlias() {
+  navigator.clipboard.writeText(CONFIG.ALIAS_MP).catch(function(){});
+  var b = document.querySelector(".cpb");
+  b.textContent = "Copiado!";
+  setTimeout(function() { b.textContent = "Copiar"; }, 2000);
+}
+
+document.getElementById("overlay").addEventListener("click", function(e) {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+renderCourts();
+</script>
+</body>
+</html>
